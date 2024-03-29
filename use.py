@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 from torchvision import models, transforms
-from PIL import Image
+from PIL import Image, ImageDraw, ImageFont
 from torchvision.models import ResNet18_Weights
 
 # 定义模型结构，确保与训练时一致
@@ -43,7 +43,24 @@ def predict_image(image_path):
     class_names = ['star_trek', 'star_wars']  # 替换为你的类别名称
     return class_names[preds[0]]
 
+
+def show_image_with_label(image_path, label):
+    # Open the image
+    image = Image.open(image_path)
+    # 创建一个可以在上面绘图的空白图层
+    draw = ImageDraw.Draw(image)
+
+    # 设置字体和大小
+    font = ImageFont.truetype('arial.ttf', 20)
+
+    # 添加标签文本
+    draw.text((10, 10), label, font=font, fill=(255, 255, 255))
+
+    # 显示图像
+    image.show()
+
+
 # 使用模型进行预测
 image_path = '11.jpeg'  # 替换成你要预测的图片路径
 predicted_class = predict_image(image_path)
-print(f'Predicted class for the input image: {predicted_class}')
+show_image_with_label(image_path, predicted_class)
