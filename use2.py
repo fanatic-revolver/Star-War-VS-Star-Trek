@@ -95,9 +95,21 @@ class ImageClassifierApp:
             self.lbl_result.config(text="Predicted Class: " + predicted_class)
 
     def display_image(self, image_path):
-        # 打开图像并将其转换为Tkinter可以显示的格式
+        # 打开图像
         image = Image.open(image_path)
-        image = ImageTk.PhotoImage(image)
+
+        # 设置最大宽度和高度
+        max_width = 800
+        max_height = 600
+
+        # 按比例缩放图片
+        if image.width > max_width or image.height > max_height:
+            scale = min(max_width / image.width, max_height / image.height)
+            # 注意这里使用 Image.LANCZOS 来代替 Image.ANTIALIAS
+            image = image.resize((int(image.width * scale), int(image.height * scale)), Image.LANCZOS)
+
+        # 将PIL图像转换为Tkinter可以显示的格式
+        image_tk = ImageTk.PhotoImage(image)
 
         # 如果标签中已有图像，则先删除
         if hasattr(self.lbl_image, 'image'):
@@ -105,8 +117,8 @@ class ImageClassifierApp:
             self.lbl_image.image = None
 
         # 将图像配置到标签中并显示
-        self.lbl_image.image = image
-        self.lbl_image.config(image=image)
+        self.lbl_image.image = image_tk
+        self.lbl_image.config(image=image_tk)
 
 
 # 创建窗口和应用

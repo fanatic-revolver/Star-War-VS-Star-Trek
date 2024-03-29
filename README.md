@@ -20,7 +20,7 @@ predicted_class = predict_image(image_path)
 show_image_with_label(image_path, predicted_class)
 ```
 
-运行use2时，可通过GUI图形界面加载图片进行预测，需要注意的是有时图片太大会导致标签被挤到看不到的地方
+运行use2时，可通过GUI图形界面加载图片进行预测
 
 
 ## 模型基于ResNet18架构，并在特定数据集上进行了训练。
