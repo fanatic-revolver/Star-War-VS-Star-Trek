@@ -93,7 +93,7 @@ def main():
     model = train_model(model, criterion, optimizer, exp_lr_scheduler, num_epochs=25, dataloaders=dataloaders, dataset_sizes=dataset_sizes, device=device)
 
     # 可以保存模型
-    torch.save(model.state_dict(), 'starwars_vs_startrek.pth')
+    torch.save(model, 'starwars_vs_startrek_full_model.pth')
 
 if __name__ == '__main__':
     main()

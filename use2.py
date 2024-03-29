@@ -7,15 +7,15 @@ from torchvision import models, transforms
 from PIL import Image, ImageDraw, ImageFont,ImageTk
 from torchvision.models import ResNet18_Weights
 
-# 定义模型结构，确保与训练时一致
-model = models.resnet18(weights=ResNet18_Weights.IMAGENET1K_V1)
-num_ftrs = model.fc.in_features
-
-# 假设我们的模型是针对2个类别训练的
-model.fc = nn.Linear(num_ftrs, 2)
+# # 定义模型结构，确保与训练时一致
+# model = models.resnet18(weights=ResNet18_Weights.IMAGENET1K_V1)
+# num_ftrs = model.fc.in_features
+#
+# # 假设我们的模型是针对2个类别训练的
+# model.fc = nn.Linear(num_ftrs, 2)
 
 # 加载之前保存的模型权重
-model.load_state_dict(torch.load('starwars_vs_startrek.pth'))
+model = torch.load('starwars_vs_startrek_full_model.pth')
 model.eval()  # 设置为评估模式
 
 # 图像预处理转换
