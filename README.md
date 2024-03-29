@@ -1,7 +1,7 @@
 # 星际迷航与星球大战图片区分
 这个项目训练了一个模型，用以区分星球大战和星际迷航的图片，这只是个初学者的简单尝试
 ## 依赖安装
-### 用anaconda
+### 用anaconda安装
 ```bash
 conda env create -f environment.yml
 ```
