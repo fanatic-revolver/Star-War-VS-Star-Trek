@@ -12,6 +12,7 @@ pip install -r requirements.txt
 ```
 ## 使用方法
 运行main.py可以训练模型
+
 运行use时，该方法需要手动修改图片路径，运行后会弹出图片以及预测标签
 ```
 image_path = '11.jpeg'  # 替换成你要预测的图片路径
