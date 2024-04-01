@@ -5,39 +5,55 @@ from torchvision import datasets, models, transforms
 from torch.utils.data import DataLoader
 import os
 
+from torchvision.models import ResNet18_Weights
+
+
 def train_model(model, criterion, optimizer, scheduler, num_epochs, dataloaders, dataset_sizes, device):
     for epoch in range(num_epochs):
-        model.train()  # Set model to training mode
+        print(f'Epoch {epoch}/{num_epochs - 1}')
+        print('-' * 10)
 
-        running_loss = 0.0
-        running_corrects = 0
+        # 每个epoch有两个训练阶段和验证阶段
+        for phase in ['train', 'val']:
+            if phase == 'train':
+                model.train()  # 设置模型为训练模式
+            else:
+                model.eval()   # 设置模型为评估模式
 
-        # 迭代数据.
-        for inputs, labels in dataloaders['train']:
-            inputs = inputs.to(device)
-            labels = labels.to(device)
+            running_loss = 0.0
+            running_corrects = 0
 
-            # 梯度置零
-            optimizer.zero_grad()
+            # 迭代数据
+            for inputs, labels in dataloaders[phase]:
+                inputs = inputs.to(device)
+                labels = labels.to(device)
 
-            # 前向传播
-            outputs = model(inputs)
-            _, preds = torch.max(outputs, 1)
-            loss = criterion(outputs, labels)
+                # 梯度置零
+                optimizer.zero_grad()
 
-            # 反向传播 + 优化
-            loss.backward()
-            optimizer.step()
+                # 前向传播
+                # 只在训练阶段跟踪历史
+                with torch.set_grad_enabled(phase == 'train'):
+                    outputs = model(inputs)
+                    _, preds = torch.max(outputs, 1)
+                    loss = criterion(outputs, labels)
 
-            # 统计
-            running_loss += loss.item() * inputs.size(0)
-            running_corrects += torch.sum(preds == labels.data)
-        scheduler.step()
+                    # 只在训练阶段进行反向传播和优化
+                    if phase == 'train':
+                        loss.backward()
+                        optimizer.step()
 
-        epoch_loss = running_loss / dataset_sizes['train']
-        epoch_acc = running_corrects.double() / dataset_sizes['train']
+                # 统计
+                running_loss += loss.item() * inputs.size(0)
+                running_corrects += torch.sum(preds == labels.data)
 
-        print(f'Epoch {epoch}/{num_epochs - 1} Loss: {epoch_loss:.4f} Acc: {epoch_acc:.4f}')
+            if phase == 'train':
+                scheduler.step()
+
+            epoch_loss = running_loss / dataset_sizes[phase]
+            epoch_acc = running_corrects.double() / dataset_sizes[phase]
+
+            print(f'{phase} Loss: {epoch_loss:.4f} Acc: {epoch_acc:.4f}')
 
     return model
 def main():
@@ -70,7 +86,7 @@ def main():
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
     # 使用预训练的模型
-    model = models.resnet18(pretrained=True)
+    model = models.resnet18(weights=ResNet18_Weights.IMAGENET1K_V1)
     num_ftrs = model.fc.in_features
 
     # 这里每个输出类别的数量是2，因为我们是在区分星球大战和星际迷航
@@ -90,10 +106,10 @@ def main():
 
 
     # 训练模型
-    model = train_model(model, criterion, optimizer, exp_lr_scheduler, num_epochs=25, dataloaders=dataloaders, dataset_sizes=dataset_sizes, device=device)
+    model = train_model(model, criterion, optimizer, exp_lr_scheduler, num_epochs=20, dataloaders=dataloaders, dataset_sizes=dataset_sizes, device=device)
 
     # 可以保存模型
-    torch.save(model, 'starwars_vs_startrek_full_model.pth')
+    torch.save(model, 'starwars_vs_startrek_full_model1.pth')
 
 if __name__ == '__main__':
     main()
